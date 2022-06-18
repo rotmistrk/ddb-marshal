@@ -1,4 +1,4 @@
-module ddb-marshal
+module github.com/rotmistrk/ddb-marshal
 
 go 1.18
 
