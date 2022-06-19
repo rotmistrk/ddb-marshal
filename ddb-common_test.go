@@ -37,8 +37,7 @@ func Test_parseSpecs(t *testing.T) {
 				"myColumn",
 			},
 			specs{
-				"myColumn",
-				false,
+				name: "myColumn",
 			},
 			false,
 		},
@@ -48,8 +47,8 @@ func Test_parseSpecs(t *testing.T) {
 				"myColumn,required",
 			},
 			specs{
-				"myColumn",
-				true,
+				name:     "myColumn",
+				required: true,
 			},
 			false,
 		},
@@ -59,8 +58,30 @@ func Test_parseSpecs(t *testing.T) {
 				"myColumn,something, required",
 			},
 			specs{
-				"myColumn",
-				true,
+				name:     "myColumn",
+				required: true,
+			},
+			false,
+		},
+		{
+			"name, hash-key",
+			args{
+				"myColumn, hash-key",
+			},
+			specs{
+				name:      "myColumn",
+				isHashKey: true,
+			},
+			false,
+		},
+		{
+			"name, range-key",
+			args{
+				"myColumn, range-key",
+			},
+			specs{
+				name:       "myColumn",
+				isRangeKey: true,
 			},
 			false,
 		},

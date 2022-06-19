@@ -4,6 +4,13 @@ import (
 	"strings"
 )
 
+const (
+	TagDdb          = "ddb"
+	TagItemHashJey  = "hash-key"
+	TagItemRangeKey = "range-key"
+	TagItemRequired = "required"
+)
+
 type DdbMarshaller struct {
 	// TODO: options:
 	//  - should we marshal fields without tags?
@@ -21,8 +28,10 @@ func NewMarshaller() *DdbMarshaller {
 }
 
 type specs struct {
-	name     string
-	required bool
+	name       string
+	required   bool
+	isHashKey  bool
+	isRangeKey bool
 }
 
 func parseSpecs(tag string) (specs, error) {
@@ -32,8 +41,12 @@ func parseSpecs(tag string) (specs, error) {
 	}
 	for _, v := range items[1:] {
 		switch strings.TrimSpace(v) {
-		case "required":
+		case TagItemRequired:
 			result.required = true
+		case TagItemHashJey:
+			result.isHashKey = true
+		case TagItemRangeKey:
+			result.isRangeKey = true
 		}
 	}
 	return result, nil

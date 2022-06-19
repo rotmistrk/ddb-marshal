@@ -17,7 +17,7 @@ func (me *DdbMarshaller) Unmarshal(target interface{}, source map[string]*dynamo
 	}
 	for i, I := 0, targetValue.NumField(); i < I; i++ {
 		fieldType := targetValue.Type().Field(i)
-		if ddbSpec, ok := fieldType.Tag.Lookup("ddb"); ok {
+		if ddbSpec, ok := fieldType.Tag.Lookup(TagDdb); ok {
 			if !fieldType.IsExported() {
 				return errors.New("can't use ddb field for unexported fieldType " + fieldType.Name)
 			}

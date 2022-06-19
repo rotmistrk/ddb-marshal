@@ -14,7 +14,7 @@ func (me *DdbMarshaller) GetUnmarshaledFields(target interface{}, response map[s
 	fieldmap := make(map[string]*reflect.StructField)
 	for i, I := 0, targetValue.NumField(); i < I; i++ {
 		fieldType := targetValue.Type().Field(i)
-		if ddbSpec, ok := fieldType.Tag.Lookup("ddb"); ok {
+		if ddbSpec, ok := fieldType.Tag.Lookup(TagDdb); ok {
 			if !fieldType.IsExported() {
 				return nil, errors.New("can't use ddb field for unexported fieldType " + fieldType.Name)
 			}

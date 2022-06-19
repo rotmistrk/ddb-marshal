@@ -11,6 +11,28 @@ import (
 )
 
 func (me *DdbMarshaller) Marshal(source interface{}) (result map[string]*dynamodb.AttributeValue, err error) {
+	return me.MarshalTagFilter(source, func(specs) bool {
+		return true
+	})
+}
+
+func IsRequired(spec specs) bool {
+	return spec.required
+}
+
+func IsHashKey(spec specs) bool {
+	return spec.isHashKey
+}
+
+func IsRangeKey(spec specs) bool {
+	return spec.isRangeKey
+}
+
+func IsKeyField(spec specs) bool {
+	return spec.isHashKey || spec.isRangeKey
+}
+
+func (me *DdbMarshaller) MarshalTagFilter(source interface{}, filter func(spec specs) bool) (result map[string]*dynamodb.AttributeValue, err error) {
 	sourceValue, err := getValidMarshallingTargetValue(source)
 	if err != nil {
 		return nil, err
@@ -18,16 +40,19 @@ func (me *DdbMarshaller) Marshal(source interface{}) (result map[string]*dynamod
 	result = make(map[string]*dynamodb.AttributeValue)
 	for i, I := 0, sourceValue.NumField(); i < I; i++ {
 		fieldType := sourceValue.Type().Field(i)
-		if ddbSpec, ok := fieldType.Tag.Lookup("ddb"); ok {
+
+		if ddbSpec, ok := fieldType.Tag.Lookup(TagDdb); ok {
 			if !fieldType.IsExported() {
 				return nil, errors.New("can't use ddb field for unexported fieldType " + fieldType.Name)
 			}
 			if specs, err := parseSpecs(ddbSpec); err != nil {
 				return nil, err
 			} else {
-				fieldValue := sourceValue.Field(i)
-				if result[specs.name], err = ddbBasicMarshal(fieldValue); err != nil {
-					return nil, err
+				if filter(specs) {
+					fieldValue := sourceValue.Field(i)
+					if result[specs.name], err = ddbBasicMarshal(fieldValue); err != nil {
+						return nil, err
+					}
 				}
 			}
 		}
