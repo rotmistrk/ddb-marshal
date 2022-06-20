@@ -88,13 +88,13 @@ func Test_parseSpecs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseSpecs(tt.args.tag)
+			got, err := ParseDdbTag(tt.args.tag)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("parseSpecs() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseDdbTag() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("parseSpecs() got = %v, want %v", got, tt.want)
+				t.Errorf("ParseDdbTag() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

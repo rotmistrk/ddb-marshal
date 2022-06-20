@@ -34,10 +34,10 @@ type specs struct {
 	isRangeKey bool
 }
 
-func parseSpecs(tag string) (specs, error) {
+func ParseDdbTag(tag string) (specs, error) {
 	items := strings.Split(tag, ",")
 	result := specs{
-		name: items[0],
+		name: strings.TrimSpace(items[0]),
 	}
 	for _, v := range items[1:] {
 		switch strings.TrimSpace(v) {

@@ -21,7 +21,7 @@ func (me *DdbMarshaller) Unmarshal(target interface{}, source map[string]*dynamo
 			if !fieldType.IsExported() {
 				return errors.New("can't use ddb field for unexported fieldType " + fieldType.Name)
 			}
-			if specs, err := parseSpecs(ddbSpec); err != nil {
+			if specs, err := ParseDdbTag(ddbSpec); err != nil {
 				return err
 			} else {
 				if attrVal := source[specs.name]; attrVal == nil {
