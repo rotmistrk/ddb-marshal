@@ -63,3 +63,7 @@ func (s specs) IsHashKey() bool {
 func (s specs) IsRangeKey() bool {
 	return s.isRangeKey
 }
+
+func (s specs) FieldName() string {
+	return s.name
+}
