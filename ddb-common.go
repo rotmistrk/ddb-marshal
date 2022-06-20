@@ -55,3 +55,11 @@ func ParseDdbTag(tag string) (specs, error) {
 func (s specs) IsRequired() bool {
 	return s.required
 }
+
+func (s specs) IsHashKey() bool {
+	return s.isHashKey
+}
+
+func (s specs) IsRangeKey() bool {
+	return s.isRangeKey
+}
