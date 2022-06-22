@@ -9,6 +9,7 @@ const (
 	TagItemHashJey  = "hash-key"
 	TagItemRangeKey = "range-key"
 	TagItemRequired = "required"
+	TagItemTtlField = "ttl-ts"
 )
 
 type DdbMarshaller struct {
@@ -32,6 +33,7 @@ type specs struct {
 	required   bool
 	isHashKey  bool
 	isRangeKey bool
+	isTtlField bool
 }
 
 func ParseDdbTag(tag string) (specs, error) {
@@ -47,6 +49,8 @@ func ParseDdbTag(tag string) (specs, error) {
 			result.isHashKey = true
 		case TagItemRangeKey:
 			result.isRangeKey = true
+		case TagItemTtlField:
+			result.isTtlField = true
 		}
 	}
 	return result, nil
@@ -62,6 +66,14 @@ func (s specs) IsHashKey() bool {
 
 func (s specs) IsRangeKey() bool {
 	return s.isRangeKey
+}
+
+func (s specs) IsKey() bool {
+	return s.isHashKey || s.IsRequired()
+}
+
+func (s specs) IsTtlField() bool {
+	return s.isTtlField
 }
 
 func (s specs) FieldName() string {
