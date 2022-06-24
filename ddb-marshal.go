@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -40,19 +41,31 @@ func (me *DdbMarshaller) MarshalTagFilter(source interface{}, filter func(spec s
 	result = make(map[string]*dynamodb.AttributeValue)
 	for i, I := 0, sourceValue.NumField(); i < I; i++ {
 		fieldType := sourceValue.Type().Field(i)
-
-		if ddbSpec, ok := fieldType.Tag.Lookup(TagDdb); ok {
+		checkUntagged := me.marshalAllPublicFields && fieldType.IsExported()
+		if ddbSpecStr, ok := fieldType.Tag.Lookup(TagDdb); ok || checkUntagged {
+			// TODO: refactor me
+			// TODO: add unit tests on marshaller flags
 			if !fieldType.IsExported() {
 				return nil, errors.New("can't use ddb field for unexported fieldType " + fieldType.Name)
 			}
-			if specs, err := ParseDdbTag(ddbSpec); err != nil {
-				return nil, err
-			} else {
-				if filter(specs) {
-					fieldValue := sourceValue.Field(i)
-					if result[specs.name], err = ddbBasicMarshal(fieldValue); err != nil {
-						return nil, err
+			var ddbSpecs specs
+			if !ok {
+				if checkUntagged {
+					ddbSpecs = specs{name: fieldType.Name}
+					if me.decapitalizeUntaggedFields {
+						ddbSpecs.name = strings.ToLower(ddbSpecs.name[0:1]) + ddbSpecs.name[1:]
 					}
+				} else {
+					continue
+				}
+			} else if ddbSpecs, err = ParseDdbTag(ddbSpecStr); err != nil {
+				return nil, err
+			}
+			ddbSpecs.name = me.addPrefixToTheFieldNames + ddbSpecs.name
+			if filter(ddbSpecs) {
+				fieldValue := sourceValue.Field(i)
+				if result[ddbSpecs.name], err = ddbBasicMarshal(fieldValue); err != nil {
+					return nil, err
 				}
 			}
 		}

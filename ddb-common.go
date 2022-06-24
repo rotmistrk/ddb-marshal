@@ -13,6 +13,9 @@ const (
 )
 
 type DdbMarshaller struct {
+	marshalAllPublicFields     bool
+	decapitalizeUntaggedFields bool
+	addPrefixToTheFieldNames   string
 	// TODO: options:
 	//  - should we marshal fields without tags?
 	//    - add ighore flag then
@@ -26,6 +29,18 @@ type DdbMarshaller struct {
 
 func NewMarshaller() *DdbMarshaller {
 	return &DdbMarshaller{}
+}
+
+func (marshaller *DdbMarshaller) SetMarshalAllPublicFields(value bool) {
+	marshaller.marshalAllPublicFields = value
+}
+
+func (marshaller *DdbMarshaller) SetDecapitalizeUntaggedFieldNames(value bool) {
+	marshaller.decapitalizeUntaggedFields = value
+}
+
+func (marshaller *DdbMarshaller) SetFieldNamePrefix(prefix string) {
+	marshaller.addPrefixToTheFieldNames = prefix
 }
 
 type specs struct {
